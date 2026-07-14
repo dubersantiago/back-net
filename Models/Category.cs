@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-public class Categoty
+public class Category
 {
     [Key]
     public int id { get; set; }

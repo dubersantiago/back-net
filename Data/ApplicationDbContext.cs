@@ -7,5 +7,5 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<Categoty> Categories { get; set; }
+    public DbSet<Category> Categories { get; set; }
 }
