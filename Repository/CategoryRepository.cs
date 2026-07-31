@@ -39,9 +39,9 @@ namespace back_net.Repository
             return _db.Categories.OrderBy(c=>c.name).ToList();
         }
 
-        public Category GetCategoryById(int id)
+        public Category? GetCategoryById(int id)
         {
-            return _db.Categories.FirstOrDefault(c=>c.id==id) ?? throw new InvalidOperationException($"La categoria con el id {id} no existe");
+            return _db.Categories.FirstOrDefault(c=>c.id==id);
         }
 
         public bool Save()

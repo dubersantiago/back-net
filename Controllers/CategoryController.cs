@@ -31,4 +31,20 @@ public class CategoryController: ControllerBase
         }
         return Ok(categoriesDto);
     }
+
+    [HttpGet("{id:int}",Name = "GetCategory")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCategori(int id)
+    {
+        var category = _categoryRepository.GetCategoryById(id);
+
+        if(category == null) return NotFound($"La categoria con el id {id} no existe");
+
+        var categoryDto = _mapper.Map<CategoryDto>(category);
+        
+        return Ok(categoryDto);
+    }
 }
