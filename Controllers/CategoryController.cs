@@ -100,4 +100,27 @@ public class CategoryController: ControllerBase
         }
         return NoContent();
     }
+
+    [HttpDelete("{id:int}",Name ="UpdateCategory")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult DeleteCategories(int id)
+    {
+        
+
+        if(!_categoryRepository.CategoryExists(id)){
+            return NotFound($"La categoria con el id {id} no existe");
+        }
+
+        var category = _categoryRepository.GetCategoryById(id);
+        if(!_categoryRepository.DeleteCategory(category.id))
+        {
+            ModelState.AddModelError("CustomError",$"Algo salio mal al actualizar {category.name}");
+            return StatusCode(500,ModelState);
+        }
+        return NoContent();
+    }
 }
