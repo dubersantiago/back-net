@@ -116,11 +116,18 @@ public class CategoryController: ControllerBase
         }
 
         var category = _categoryRepository.GetCategoryById(id);
+
+        if (category == null)
+        {
+            return NotFound($"La categoria con el id {id} no existe");
+        }
+
         if(!_categoryRepository.DeleteCategory(category.id))
         {
             ModelState.AddModelError("CustomError",$"Algo salio mal al actualizar {category.name}");
             return StatusCode(500,ModelState);
         }
+        
         return NoContent();
     }
 }
