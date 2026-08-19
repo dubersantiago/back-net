@@ -47,4 +47,30 @@ public class CategoryController: ControllerBase
         
         return Ok(categoryDto);
     }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public IActionResult CreateCategories([FromBody] CreateCategoryDto createCategoryDto)
+    {
+        if(createCategoryDto == null)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if(_categoryRepository.CategoryExists(createCategoryDto.name)){
+            ModelState.AddModelError("CustomError","La categoria ya existe");
+            return BadRequest(ModelState);
+        }
+
+        var category = _mapper.Map<Category>(createCategoryDto);
+        if(!_categoryRepository.CreateCategory(category))
+        {
+            ModelState.AddModelError("CustomError",$"Algo salio mal al guardar {category.name}");
+            return StatusCode(500,ModelState);
+        }
+        return CreatedAtRoute("GetCategory",new { id=category.id },category);
+    }
 }

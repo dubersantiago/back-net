@@ -11,20 +11,20 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace back_net.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260714031425_InitialMigrations")]
-    partial class InitialMigrations
+    [Migration("20260819014955_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Categoty", b =>
+            modelBuilder.Entity("Category", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
