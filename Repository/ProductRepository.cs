@@ -1,5 +1,6 @@
 using back_net.Models;
 using back_net.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace back_net.Repository;
@@ -14,7 +15,7 @@ public class ProductRepository : IProductRepository
     }
     public ICollection<Product> GetProducts()
     {
-        return _db.products.OrderBy(p=>p.Name).ToList();
+        return _db.products.Include(p=>p.Category).OrderBy(p=>p.Name).ToList();
     }
     public ICollection<Product> GetProductsForCategory(int categoryId)
     {
@@ -24,7 +25,7 @@ public class ProductRepository : IProductRepository
     public Product? GetProduct(int id)
     {
         if(id<=0) return null;
-        return _db.products.FirstOrDefault(p=>p.ProductId==id);
+        return _db.products.Include(p=>p.Category).FirstOrDefault(p=>p.ProductId==id);
     }
     public bool BuyProduct(string nombre, int cantidad)
     {

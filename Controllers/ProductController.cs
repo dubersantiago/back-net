@@ -75,6 +75,8 @@ public class ProductController: ControllerBase
             ModelState.AddModelError("CustomError",$"Algo salio mal al guardar {product.Name}");
             return StatusCode(500,ModelState);
         }
-        return CreatedAtRoute("Getproduct",new { productId=product.ProductId },product);
+        var createdProduct = _productRepository.GetProduct(product.ProductId);
+        var productDto = _mapper.Map<ProductDto>(createdProduct);
+        return CreatedAtRoute("Getproduct",new { productId=productDto.ProductId },productDto);
     }
 }
