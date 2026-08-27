@@ -103,4 +103,78 @@ public class ProductController: ControllerBase
         var productDto = _mapper.Map<ProductDto>(createdProduct);
         return CreatedAtRoute("Getproduct",new { productId=productDto.ProductId },productDto);
     }
+
+    [HttpPatch("BuyProduct/{name}/{cantidad:int}",Name ="BuyProduct")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult BuyProduct(String name, int cantidad)
+    {
+        if(String.IsNullOrEmpty(name)|| cantidad<=0) return BadRequest("La cantidad o el nombre no sin validos");
+        if(!_productRepository.ProductExist(name)) return NotFound($"No se encontro el producto {name}");
+        if (!_productRepository.BuyProduct(name, cantidad))
+        {
+            ModelState.AddModelError("CustomError",$"No se pudo comprar el produdcto o la cantidad es superior al stock disponible");
+            return BadRequest(ModelState);
+        }
+        
+        
+        return Ok($"Se compro la cantidad {cantidad} de {name}");
+    }
+
+    [HttpPut("{productId:int}",Name ="UpdateProduct")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public IActionResult UpdateProduct(int productId,[FromBody] UpdateProductDto updateProductDto)
+    {
+        if(updateProductDto == null)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if(!_productRepository.ProductExist(productId)){
+            ModelState.AddModelError("CustomError","El producto no existe");
+            return BadRequest(ModelState);
+        }
+
+        if(!_categoryRepository.CategoryExists(updateProductDto.CategoryId)){
+            ModelState.AddModelError("CustomError","La categoria no existe");
+            return BadRequest(ModelState);
+        }
+
+        var product = _mapper.Map<Product>(updateProductDto);
+        product.ProductId=productId;
+        if(!_productRepository.UpdateProduct(product))
+        {
+            ModelState.AddModelError("CustomError",$"Algo salio mal al actualizar el producto {product.Name}");
+            return StatusCode(500,ModelState);
+        }
+        
+        return NoContent();
+    }
+
+    [HttpDelete("{productId:int}",Name ="DeleteProduct")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public IActionResult DeleteProduct(int productId)
+    {
+        if(productId==0) return BadRequest($"No se encontro un producto");
+        if(!_productRepository.ProductExist(productId)){
+            ModelState.AddModelError("CustomError","El producto no existe");
+            return BadRequest(ModelState);
+        }
+
+        var product = _productRepository.GetProduct(productId);
+        if(!_productRepository.DeleteProduct(product!))
+        {
+            ModelState.AddModelError("CustomError",$"Algo salio mal al eliminar el producto {product!.Name}");
+            return StatusCode(500,ModelState);
+        }
+        
+        return NoContent();
+    }
 }
