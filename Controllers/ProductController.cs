@@ -45,6 +45,18 @@ public class ProductController: ControllerBase
         return Ok(productDto);
     }
 
+    [HttpGet("search/{query}",Name ="SearchProduct")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult SearchProduct(String query)
+    {
+        var products = _productRepository.SearchProduct(query);
+        if(products.Count == 0) return NotFound($"No existen productos con el nombre '{query}' o descripcion ");
+        var productDto = _mapper.Map<List<ProductDto>>(products);
+        
+        return Ok(productDto);
+    }
+
     [HttpGet("{productId:int}",Name = "GetProduct")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

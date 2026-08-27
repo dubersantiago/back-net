@@ -68,10 +68,11 @@ public class ProductRepository : IProductRepository
     }
     public ICollection<Product> SearchProduct(string nombre)
     {
+        var searchTermLower = nombre.ToLower().Trim();
         IQueryable<Product> query = _db.products;
         if (!String.IsNullOrEmpty(nombre))
         {
-            query = query.Where(p=>p.Name.ToLower().Trim() == nombre.ToLower().Trim());
+            query = query.Include(p=>p.Category).Where(p=>p.Name.ToLower().Trim().Contains(searchTermLower)||p.description.ToLower().Trim().Contains(searchTermLower));
         }
         return query.OrderBy(p=>p.Name).ToList();
     }
