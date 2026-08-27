@@ -33,6 +33,18 @@ public class ProductController: ControllerBase
         return Ok(productDto);
     }
 
+    [HttpGet("searchByCategory/{categoryId:int}",Name ="GetProdcutsByCategory")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetProdcutsByCategory(int categoryId)
+    {
+        var products = _productRepository.GetProductsForCategory(categoryId);
+        if(products.Count == 0) return NotFound($"No existen productos con la categoria {categoryId}");
+        var productDto = _mapper.Map<List<ProductDto>>(products);
+        
+        return Ok(productDto);
+    }
+
     [HttpGet("{productId:int}",Name = "GetProduct")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
