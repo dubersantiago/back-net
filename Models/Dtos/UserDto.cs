@@ -1,10 +1,7 @@
-using System.ComponentModel.DataAnnotations;
+namespace back_net.Models.Dtos;
 
-namespace back_net.Models;
-
-public class User
+public class UserDto
 {
-    [Key]
     public int Id {get;set;}
     public String? Name {get;set;}
     public String? Username {get;set;}
