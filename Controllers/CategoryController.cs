@@ -44,7 +44,7 @@ public class CategoryController: ControllerBase
         if(category == null) return NotFound($"La categoria con el id {id} no existe");
 
         var categoryDto = _mapper.Map<CategoryDto>(category);
-        
+
         return Ok(categoryDto);
     }
 
@@ -109,7 +109,7 @@ public class CategoryController: ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult DeleteCategories(int id)
     {
-        
+
 
         if(!_categoryRepository.CategoryExists(id)){
             return NotFound($"La categoria con el id {id} no existe");
@@ -127,7 +127,7 @@ public class CategoryController: ControllerBase
             ModelState.AddModelError("CustomError",$"Algo salio mal al actualizar {category.name}");
             return StatusCode(500,ModelState);
         }
-        
+
         return NoContent();
     }
 }
