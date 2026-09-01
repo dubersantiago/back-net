@@ -4,11 +4,13 @@ using back_net.Repository.IRepository;
 using AutoMapper;
 using back_net.Models.Dtos;
 using back_net.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace back_net.Controllers;
 
 [Route("Api/[controller]")]
 [ApiController]
+[Authorize(Roles = "admin")]
 public class UserController: ControllerBase
 {
     private readonly IUserRepository _userRepository;
@@ -45,6 +47,7 @@ public class UserController: ControllerBase
         return Ok(UserDto);
     }
 
+    [AllowAnonymous]
     [HttpPost(Name = "RegisterUser")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -67,6 +70,7 @@ public class UserController: ControllerBase
         return CreatedAtRoute("GetUser",new { id=result.Id },result);
     }
 
+    [AllowAnonymous]
     [HttpPost("Login",Name = "LoginUser")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -84,27 +88,4 @@ public class UserController: ControllerBase
         return Ok(result);
     }
 
-    // [HttpDelete("{productId:int}",Name ="DeleteProduct")]
-    // [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    // [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    // [ProducesResponseType(StatusCodes.Status404NotFound)]
-    // [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    // [ProducesResponseType(StatusCodes.Status204NoContent)]
-    // public IActionResult DeleteProduct(int productId)
-    // {
-    //     if(productId==0) return BadRequest($"No se encontro un producto");
-    //     if(!_productRepository.ProductExist(productId)){
-    //         ModelState.AddModelError("CustomError","El producto no existe");
-    //         return BadRequest(ModelState);
-    //     }
-
-    //     var product = _productRepository.GetProduct(productId);
-    //     if(!_productRepository.DeleteProduct(product!))
-    //     {
-    //         ModelState.AddModelError("CustomError",$"Algo salio mal al eliminar el producto {product!.Name}");
-    //         return StatusCode(500,ModelState);
-    //     }
-        
-    //     return NoContent();
-    // }
 }

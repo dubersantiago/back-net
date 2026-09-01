@@ -8,7 +8,7 @@ namespace back_net.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+[Authorize(Roles = "admin")]
 public class CategoryController: ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
@@ -20,6 +20,7 @@ public class CategoryController: ControllerBase
         _mapper=mapper;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -34,6 +35,7 @@ public class CategoryController: ControllerBase
         return Ok(categoriesDto);
     }
 
+    [AllowAnonymous]    
     [HttpGet("{id:int}",Name = "GetCategory")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

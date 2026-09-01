@@ -4,11 +4,13 @@ using back_net.Repository.IRepository;
 using AutoMapper;
 using back_net.Models.Dtos;
 using back_net.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace back_net.Controllers;
 
 [Route("Api/[controller]")]
 [ApiController]
+[Authorize(Roles = "admin")]
 public class ProductController: ControllerBase
 {
     private readonly IProductRepository _productRepository;
@@ -22,6 +24,7 @@ public class ProductController: ControllerBase
         _mapper=mapper;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -33,6 +36,7 @@ public class ProductController: ControllerBase
         return Ok(productDto);
     }
 
+    [AllowAnonymous]
     [HttpGet("searchByCategory/{categoryId:int}",Name ="GetProdcutsByCategory")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
