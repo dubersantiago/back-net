@@ -1,12 +1,14 @@
 using AutoMapper;
 using back_net.Models.Dtos;
 using back_net.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace back_net.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CategoryController: ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
