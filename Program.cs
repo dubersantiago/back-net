@@ -4,6 +4,7 @@ using back_net.Repository;
 using back_net.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -15,6 +16,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 var dbConectionString = builder.Configuration.GetConnectionString("ConexionSql");
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConectionString));
+
+builder.Services.AddResponseCaching(options =>
+{
+    options.MaximumBodySize = 1024 * 1024;
+    options.UseCaseSensitivePaths = true;
+});
+
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -41,7 +49,11 @@ builder.Services.AddAuthentication(Options=>
     };
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.CacheProfiles.Add(CacheProfiles.Default10,CacheProfiles.Profile10);
+    options.CacheProfiles.Add(CacheProfiles.Default20,CacheProfiles.Profile20);
+});
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi(options =>
@@ -71,6 +83,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(PolicyNames.AllowSpecificOrigin);
+app.UseResponseCaching();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

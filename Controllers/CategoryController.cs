@@ -37,13 +37,16 @@ public class CategoryController: ControllerBase
 
     [AllowAnonymous]    
     [HttpGet("{id:int}",Name = "GetCategory")]
+    [ResponseCache(CacheProfileName = "Default10")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetCategori(int id)
     {
+        Console.WriteLine($"Categoria con el id {id} a las {DateTime.Now}");
         var category = _categoryRepository.GetCategoryById(id);
+        Console.WriteLine($"Respuesta con el id {id}  a las {DateTime.Now}");
 
         if(category == null) return NotFound($"La categoria con el id {id} no existe");
 
