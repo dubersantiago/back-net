@@ -28,14 +28,14 @@ public class UserRepository : IUserRepository
         _db=db;
         SecretKey=configuration.GetValue<String>("ApiSettings:SecretKey");
     }
-    public User? GetUser(int id)
+    public ApplicationUser? GetUser(string id)
     {
-        return _db.users.FirstOrDefault(u=>u.Id==id);
+        return _db.applicationUsers.FirstOrDefault(u=>u.Id==id);
     }
 
-    public ICollection<User> GetUsers()
+    public ICollection<ApplicationUser> GetUsers()
     {
-        return _db.users.OrderBy(u=>u.Username).ToList();
+        return _db.applicationUsers.OrderBy(u=>u.UserName).ToList();
     }
 
     public bool IsUniqueUser(string name)
@@ -140,6 +140,7 @@ public class UserRepository : IUserRepository
 
             return _mapper.Map<UserDataDto>(createdUser);
         }
-        throw new ApplicationException("No se pudo crear el registro");
+        var errors = string.Join(", ",result.Errors.Select(e=>e.Description));
+        throw new ApplicationException($"No se pudo crear el registro: {errors}");
     }
 }

@@ -12,7 +12,7 @@ namespace back_net.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
 [ApiController]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = "Admin")]
 public class UserController: ControllerBase
 {
     private readonly IUserRepository _userRepository;
@@ -35,12 +35,12 @@ public class UserController: ControllerBase
         return Ok(usersDto);
     }    
 
-    [HttpGet("{id:int}",Name = "GetUser")]
+    [HttpGet("{id}",Name = "GetUser")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IActionResult GetUser(int id)
+    public IActionResult GetUser(string id)
     {
         var User = _userRepository.GetUser(id);
         if(User == null) return NotFound($"El Usuario con el id {id} no existe");

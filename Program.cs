@@ -2,6 +2,7 @@ using System.Data.Common;
 using System.Text;
 using Asp.Versioning;
 using back_net.Constants;
+using back_net.Models;
 using back_net.Repository;
 using back_net.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication;
@@ -28,7 +29,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
