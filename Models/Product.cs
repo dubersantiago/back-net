@@ -14,7 +14,8 @@ public class Product
     [Range(0,double.MaxValue)]
     [Column(TypeName = "decimal(18,2)")]
     public decimal price { get; set; }
-    public string imgUrl { get; set; } = String.Empty;
+    public string? imgUrl { get; set; }
+    public string? imgUrlLocal { get; set; }
     [Required]
     public string SKU { get; set; } = String.Empty;
     [Range(0,int.MaxValue)]
