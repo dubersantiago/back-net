@@ -8,7 +8,13 @@ public class ApplicationDbContext : DbContext
     {
     }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+    }
+
     public DbSet<Category> Categories { get; set; }
     public DbSet<Product> products { get; set; }
     public DbSet<User> users { get; set; }
+    public DbSet<ApplicationUser> applicationUsers { get; set; }
 }
