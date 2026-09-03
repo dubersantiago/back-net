@@ -1,13 +1,12 @@
 using System.Text;
+using Asp.Versioning;
 using back_net.Constants;
 using back_net.Repository;
 using back_net.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
@@ -56,10 +55,23 @@ builder.Services.AddControllers(options =>
 });
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi(options =>
+builder.Services.AddApiVersioning(options =>
 {
-    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1,0);
+    options.ReportApiVersions = true;
+    // options.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("api/version"));
+})
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+})
+.AddOpenApi(options =>
+{
+    options.Document.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
 });
+
 builder.Services.AddCors(Options =>
     {
         Options.AddPolicy(PolicyNames.AllowSpecificOrigin,
@@ -73,10 +85,17 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().WithDocumentPerVersion();
     app.MapScalarApiReference(options =>
     {
         options.AddPreferredSecuritySchemes("Bearer");
+
+        var descriptions = app.DescribeApiVersions();
+        for (var i = 0; i < descriptions.Count; i++)
+        {
+            var description = descriptions[i];
+            options.AddDocument(description.GroupName, description.GroupName, isDefault: i == descriptions.Count - 1);
+        }
     });
 }
 

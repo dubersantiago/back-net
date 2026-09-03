@@ -5,10 +5,12 @@ using AutoMapper;
 using back_net.Models.Dtos;
 using back_net.Models;
 using Microsoft.AspNetCore.Authorization;
+using Asp.Versioning;
 
 namespace back_net.Controllers;
 
-[Route("Api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ApiVersion("1.0")]
 [ApiController]
 [Authorize(Roles = "admin")]
 public class UserController: ControllerBase

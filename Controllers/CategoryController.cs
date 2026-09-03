@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using AutoMapper;
 using back_net.Models.Dtos;
 using back_net.Repository.IRepository;
@@ -6,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace back_net.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
 [ApiController]
 [Authorize(Roles = "admin")]
 public class CategoryController: ControllerBase
@@ -21,12 +24,29 @@ public class CategoryController: ControllerBase
     }
 
     [AllowAnonymous]
+    [MapToApiVersion("1.0")]
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetCategories()
     {
         var categories = _categoryRepository.GetAllCategories();
+        var categoriesDto = new List<CategoryDto>();
+        foreach (var category in categories)
+        {
+            categoriesDto.Add(_mapper.Map<CategoryDto>(category));
+        }
+        return Ok(categoriesDto);
+    }
+
+    [AllowAnonymous]
+    [MapToApiVersion("2.0")]
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetCategoriesorderById()
+    {
+        var categories = _categoryRepository.GetAllCategories().OrderBy(cat => cat.id);
         var categoriesDto = new List<CategoryDto>();
         foreach (var category in categories)
         {
