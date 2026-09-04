@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using back_net.Repository.IRepository;
-using AutoMapper;
+using MapsterMapper;
 using back_net.Models.Dtos;
 using back_net.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +12,7 @@ namespace back_net.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiVersion("1.0")]
 [ApiController]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = "Admin")]
 public class ProductController: ControllerBase
 {
     private readonly IProductRepository _productRepository;

@@ -1,17 +1,19 @@
-using AutoMapper;
+using Mapster;
 using back_net.Models;
 using back_net.Models.Dtos;
 
 namespace back_net.Mapping;
 
-public class ProductProfile:Profile
+public class ProductProfile : IRegister
 {
-    public ProductProfile()
+    public void Register(TypeAdapterConfig config)
     {
-        CreateMap<Product, ProductDto>()
-        .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.name))
-        .ReverseMap();
-        CreateMap<Product, CreateProductDto>().ReverseMap();
-        CreateMap<Product, UpdateProductDto>().ReverseMap();
+        config.NewConfig<Product, ProductDto>()
+            .Map(dest => dest.CategoryName, src => src.Category.name);
+        config.NewConfig<ProductDto, Product>();
+        config.NewConfig<Product, CreateProductDto>();
+        config.NewConfig<CreateProductDto, Product>();
+        config.NewConfig<Product, UpdateProductDto>();
+        config.NewConfig<UpdateProductDto, Product>();
     }
 }

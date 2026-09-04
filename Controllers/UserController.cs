@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using back_net.Repository.IRepository;
-using AutoMapper;
+using MapsterMapper;
 using back_net.Models.Dtos;
 using back_net.Models;
 using Microsoft.AspNetCore.Authorization;

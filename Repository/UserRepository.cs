@@ -2,7 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using AutoMapper;
+using MapsterMapper;
 using back_net.Models;
 using back_net.Models.Dtos;
 using back_net.Repository.IRepository;

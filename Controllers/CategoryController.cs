@@ -1,5 +1,5 @@
 using Asp.Versioning;
-using AutoMapper;
+using MapsterMapper;
 using back_net.Models.Dtos;
 using back_net.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +11,7 @@ namespace back_net.Controllers;
 [ApiVersion("1.0")]
 [ApiVersion("2.0")]
 [ApiController]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = "Admin")]
 public class CategoryController: ControllerBase
 {
     private readonly ICategoryRepository _categoryRepository;
