@@ -17,7 +17,15 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 var dbConectionString = builder.Configuration.GetConnectionString("ConexionSql");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+  options.UseSqlServer(dbConectionString)
+  .UseSeeding((context, _) =>
+  {
+    var appContext = (ApplicationDbContext)context;
+    // Seeding de Roles
+    DataSeeder.SeddData(appContext);
+  })
+);
 
 builder.Services.AddResponseCaching(options =>
 {
@@ -77,6 +85,7 @@ builder.Services.AddApiVersioning(options =>
 .AddOpenApi(options =>
 {
     options.Document.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.Document.AddOperationTransformer<FormFileOperationTransformer>();
 });
 
 builder.Services.AddCors(Options =>
@@ -144,5 +153,24 @@ internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvi
                 [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
             });
         }
+    }
+}
+
+internal sealed class FormFileOperationTransformer : IOpenApiOperationTransformer
+{
+    public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
+    {
+        if (operation.RequestBody?.Content is { } content
+            && content.Remove("application/x-www-form-urlencoded", out var mediaType)
+            && mediaType.Schema?.Properties is { } properties
+            && properties.Values.Any(property => property.Format == "binary"))
+        {
+            mediaType.Encoding = properties
+                .Where(property => property.Value.Format != "binary")
+                .ToDictionary(property => property.Key, _ => new OpenApiEncoding { ContentType = "text/plain" });
+            content["multipart/form-data"] = mediaType;
+        }
+
+        return Task.CompletedTask;
     }
 }

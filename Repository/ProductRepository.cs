@@ -87,4 +87,14 @@ public class ProductRepository : IProductRepository
     {
         return _db.SaveChanges() >= 0 ; ;
     }
+
+    public ICollection<Product> GetProductsInPages(int page, int size)
+    {
+        return _db.products.OrderBy(p =>p.ProductId).Skip((page-1)*size).Take(size).ToList();
+    }
+
+    public int GetTotlaProducts()
+    {
+        return _db.products.Count();
+    }
 }

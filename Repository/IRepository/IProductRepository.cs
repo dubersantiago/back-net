@@ -5,6 +5,8 @@ namespace back_net.Repository.IRepository;
 public interface IProductRepository
 {
     ICollection<Product> GetProducts();
+    ICollection<Product> GetProductsInPages(int page, int size);
+    int GetTotlaProducts();
     ICollection<Product> GetProductsForCategory(int categoryId);
     ICollection<Product> SearchProduct(String nombre);
     Product? GetProduct(int id);

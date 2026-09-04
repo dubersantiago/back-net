@@ -39,6 +39,30 @@ public class ProductController: ControllerBase
     }
 
     [AllowAnonymous]
+    [HttpGet("Paged", Name = "GetProductsInPage")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public IActionResult GetProductsInPage([FromQuery] int page , [FromQuery] int size )
+    {
+        Console.WriteLine($"{page} {size}");
+        if(page < 1 || size < 1) return BadRequest("Los parametros de paginacion no son validos");
+        var totalProductos = _productRepository.GetTotlaProducts();
+        var totalPages = (int) Math.Ceiling((double) totalProductos/size);
+        if ( page>totalPages) return NotFound("No hay mas paginas disponibles");
+        var products = _productRepository.GetProductsInPages(page , size);
+        var productDto = _mapper.Map<List<ProductDto>>(products);
+        var paginationResopnse = new PaginationResponse<ProductDto>
+        {
+            Items = productDto,
+            Page = page,
+            Size = size,
+            TotalPages = totalPages  
+        };
+        return Ok(paginationResopnse);
+    }
+
+    [AllowAnonymous]
     [HttpGet("searchByCategory/{categoryId:int}",Name ="GetProdcutsByCategory")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -82,7 +106,7 @@ public class ProductController: ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public IActionResult CreateProduct([FromBody] CreateProductDto createproductDto)
+    public IActionResult CreateProduct([FromForm] CreateProductDto createproductDto)
     {
         if(createproductDto == null)
         {
@@ -100,6 +124,25 @@ public class ProductController: ControllerBase
         }
 
         var product = _mapper.Map<Product>(createproductDto);
+
+        if(createproductDto.image != null)
+        {
+            string filename = product.ProductId.ToString() + Guid.NewGuid().ToString() + Path.GetExtension(createproductDto.image.FileName);
+            var imageFolder = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot","ProductImages");
+            if(!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
+            var filePath = Path.Combine(imageFolder,filename);
+            FileInfo file = new FileInfo(filePath);
+            if(file.Exists)file.Delete();
+            using var filestream = new FileStream(filePath,FileMode.Create);
+            createproductDto.image.CopyTo(filestream);
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+            product.imgUrl=$"{baseUrl}/ProductImages/{filename}";
+            product.imgUrlLocal = filePath;
+        }
+        else
+        {
+            product.imgUrl="https://placehold.co/300x300";
+        }
         if(!_productRepository.CreateProduct(product))
         {
             ModelState.AddModelError("CustomError",$"Algo salio mal al guardar {product.Name}");
@@ -132,7 +175,7 @@ public class ProductController: ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult UpdateProduct(int productId,[FromBody] UpdateProductDto updateProductDto)
+    public IActionResult UpdateProduct(int productId,[FromForm] UpdateProductDto updateProductDto)
     {
         if(updateProductDto == null)
         {
@@ -150,6 +193,24 @@ public class ProductController: ControllerBase
         }
 
         var product = _mapper.Map<Product>(updateProductDto);
+        if(updateProductDto.image != null)
+        {
+            string filename = product.ProductId.ToString() + Guid.NewGuid().ToString() + Path.GetExtension(updateProductDto.image.FileName);
+            var imageFolder = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot","ProductImages");
+            if(!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
+            var filePath = Path.Combine(imageFolder,filename);
+            FileInfo file = new FileInfo(filePath);
+            if(file.Exists)file.Delete();
+            using var filestream = new FileStream(filePath,FileMode.Create);
+            updateProductDto.image.CopyTo(filestream);
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+            product.imgUrl=$"{baseUrl}/ProductImages/{filename}";
+            product.imgUrlLocal = filePath;
+        }
+        else
+        {
+            product.imgUrl="https://placehold.co/300x300";
+        }
         product.ProductId=productId;
         if(!_productRepository.UpdateProduct(product))
         {
